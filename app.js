@@ -14,8 +14,8 @@ var mysql = require('mysql');
 
 var con = mysql.createConnection({
   host: "localhost",
-  user: "user",
-  password: "pass",
+  user: "linuxluv",
+  password: "linuxluv",
   database: "db_student"
 });
 
@@ -33,6 +33,27 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/', index);
 app.use('/users', users);
+
+function formatDate(date) {
+  var d = new Date(date),
+      month = '' + (d.getMonth() + 1),
+      day = '' + d.getDate(),
+      year = d.getFullYear();
+
+  if (month.length < 2) month = '0' + month;
+  if (day.length < 2) day = '0' + day;
+
+  return [day, month, year].join('-');
+}
+
+function getStudentGender(rows, studentGender){
+  if(studentGender === 'M'){
+    gender = 'Male';
+  } else {
+    gender = 'Female';
+  }
+  return gender;
+}
 
 ///
 /// HTTP Method	: GET
@@ -52,14 +73,16 @@ app.get('/students', function(req, res) {
 
       // Loop check on each row
       for (var i = 0; i < rows.length; i++) {
+        var gender = getStudentGender(rows, rows[i].gender);
+        var dateOfBirth = formatDate(rows[i].date_of_birth);
 
         // Create an object to save current row's data
         var student = {
           'student_id':rows[i].student_id,
           'name':rows[i].name,
           'address':rows[i].address,
-          'gender':rows[i].gender,
-          'date_of_birth':rows[i].date_of_birth
+          'gender':gender,
+          'date_of_birth':dateOfBirth
         }
         // Add object into array
         studentList.push(student);
@@ -69,8 +92,6 @@ app.get('/students', function(req, res) {
     res.render('index', {title: 'Student List', data: studentList});
     }
   });
-
-  con.end();
 });
 
 // catch 404 and forward to error handler
