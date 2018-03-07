@@ -1,0 +1,14 @@
+html
+  head
+    title= 'Student List'
+  body
+    h1= title
+    table
+      for student in data
+        tr
+          td= student.student_id
+          td
+            a(href='/student/'+student.student_id) #{student.name}
+          td= student.address
+          td= student.gender
+          td= student.date_of_birth
