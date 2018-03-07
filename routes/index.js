@@ -4,8 +4,8 @@ var mysql = require('mysql');
 
 var con = mysql.createConnection({
   host: "localhost",
-  user: "user",
-  password: "pass",
+  user: "linuxluv",
+  password: "linuxluv",
   database: "db_student"
 });
 
@@ -14,15 +14,8 @@ router.get('/', function(req, res, next) {
   con.connect(function(err) {
     if (err) throw err;
     console.log("Connected!");
-
-    // query
-    // con.query("SELECT * FROM tbl_student", function (err, result, fields) {
-    //   if (err) throw err;
-    //   console.log(result);
-    // });
   });
-
-  //res.render('index', { title: 'Express' });
+  
   res.send('express');    
 });
 
