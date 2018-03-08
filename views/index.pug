@@ -1,25 +1,30 @@
 html
-  head
-    title= 'Web Student'
-    link(href='https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css', rel='stylesheet')
-  body.container
-    h1= title
-    table.table
-      thead.thead-dark
-        tr
-          th= 'ID'
-          th= 'Name'
-          th= 'Address'
-          th= 'Gender'
-          th= 'Date of Birth'
-      for student in data
-        tr
-          td= student.student_id
-          td
-            a(href='/student/'+student.student_id) #{student.name}
-          td= student.address
-          td= student.gender
-          td= student.date_of_birth
-    script(src='https://code.jquery.com/jquery-3.2.1.slim.min.js')
-    script(src='https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js')
-    script(src='https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js')
+	head
+		title= 'Web Student'
+		link(href='https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css', rel='stylesheet')
+	body.container
+		h1= title
+		.form-group
+			a.btn.btn-primary(href="/fstudent")= 'Add Student'
+		table.table
+			thead.thead-dark
+				tr
+					th= 'ID'
+					th= 'Name'
+					th= 'Address'
+					th= 'Gender'
+					th= 'Date of Birth'
+					th
+			for student in data
+				tr
+					td= student.student_id
+					td
+						a(href='/student/'+student.student_id) #{student.name}
+					td= student.address
+					td= student.gender
+					td= student.date_of_birth
+					td
+						a.btn.btn-warning(href="/delete_student")= 'Delete'
+		script(src='https://code.jquery.com/jquery-3.2.1.slim.min.js')
+		script(src='https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js')
+		script(src='https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js')
