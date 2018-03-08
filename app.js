@@ -34,6 +34,18 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use('/', index);
 app.use('/users', users);
 
+function formatDateForMySQL(date) {
+  var d = new Date(date),
+      month = '' + (d.getMonth() + 1),
+      day = '' + d.getDate(),
+      year = d.getFullYear();
+
+  if (month.length < 2) month = '0' + month;
+  if (day.length < 2) day = '0' + day;
+
+  return [year, month, day].join('-');
+}
+
 function formatDate(date) {
   var d = new Date(date),
       month = '' + (d.getMonth() + 1),
@@ -57,9 +69,9 @@ function getStudentGender(rows, studentGender){
 
 ///
 /// HTTP Method	: GET
-/// Endpoint 	: /person
+/// Endpoint 	: /students
 /// 
-/// To get collection of person saved in MySQL database.
+/// To get collection of student saved in MySQL database.
 ///
 app.get('/students', function(req, res) {
   var studentList = [];
@@ -92,6 +104,61 @@ app.get('/students', function(req, res) {
     res.render('index', {title: 'Student List', data: studentList});
     }
   });
+});
+
+///
+/// HTTP Method	: GET
+/// Endpoint 	: /student/(:id)
+/// 
+/// Show edit form
+///
+app.get('/student/:id', function(req, res){
+	con.query('SELECT * FROM tbl_student WHERE student_id = ?', [req.params.id], function(err, rows, fields) {
+		if(err) throw err
+		
+		// if user not found
+		if (rows.length <= 0) {
+				req.flash('error', 'Student not found with id = ' + req.params.id)
+				res.redirect('/students')
+		}
+		else { // if user found
+				// render to views/index.pug template file
+				res.render('student', {
+						title: 'Edit Student', 
+						//data: rows[0],
+						sid: rows[0].student_id,
+						sname: rows[0].name
+				})
+		}            
+	});
+});
+
+///
+/// HTTP Method	: POST
+/// Endpoint 	: /insert_student
+/// 
+/// To insert student data in MySQL database.
+///
+app.post('/insert_student', function(req, res) {
+	var studentId = req.body.id;
+	var studentName = req.body.name;
+	var studentAddress = req.body.address;
+	var studentGender = req.body.radio;
+	var studentDoB = formatDateForMySQL(req.body.dob);
+	console.log(studentId+' '+studentName+' '+studentAddress+' '+studentGender+' '+studentDoB);
+
+	var postData  = {student_id: studentId, name: studentName, address: studentAddress, gender: studentGender, date_of_birth: studentDoB};
+	con.query('INSERT INTO tbl_student SET ?', postData, function (error, results, fields) {
+		if (error) throw error;
+		console.log(results.insertId);
+		// res.send('insert ok');
+		res.redirect('/students');
+	});
+});
+
+app.get('/fstudent', function(req, res) {
+  // Render index.pug page using array 
+  res.render('student', {title: 'Student'});
 });
 
 // catch 404 and forward to error handler
