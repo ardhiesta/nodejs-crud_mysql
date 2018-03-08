@@ -34,7 +34,31 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use('/', index);
 app.use('/users', users);
 
-function formatDateForPug(date) {
+// function formatDateForPug(date) {
+//   var d = new Date(date),
+//       month = '' + (d.getMonth() + 1),
+//       day = '' + d.getDate(),
+//       year = d.getFullYear();
+
+//   if (month.length < 2) month = '0' + month;
+//   if (day.length < 2) day = '0' + day;
+
+//   return [month, day, year].join('/');
+// }
+
+// function formatDateForMySQL(date) {
+//   var d = new Date(date),
+//       month = '' + (d.getMonth() + 1),
+//       day = '' + d.getDate(),
+//       year = d.getFullYear();
+
+//   if (month.length < 2) month = '0' + month;
+//   if (day.length < 2) day = '0' + day;
+
+//   return [year, month, day].join('-');
+// }
+
+function formatDate(date, type) {
   var d = new Date(date),
       month = '' + (d.getMonth() + 1),
       day = '' + d.getDate(),
@@ -43,31 +67,11 @@ function formatDateForPug(date) {
   if (month.length < 2) month = '0' + month;
   if (day.length < 2) day = '0' + day;
 
-  return [month, day, year].join('/');
-}
-
-function formatDateForMySQL(date) {
-  var d = new Date(date),
-      month = '' + (d.getMonth() + 1),
-      day = '' + d.getDate(),
-      year = d.getFullYear();
-
-  if (month.length < 2) month = '0' + month;
-  if (day.length < 2) day = '0' + day;
-
-  return [year, month, day].join('-');
-}
-
-function formatDate(date) {
-  var d = new Date(date),
-      month = '' + (d.getMonth() + 1),
-      day = '' + d.getDate(),
-      year = d.getFullYear();
-
-  if (month.length < 2) month = '0' + month;
-  if (day.length < 2) day = '0' + day;
-
-  return [day, month, year].join('-');
+  if (type === 'mysql') {
+    return [year, month, day].join('-');
+  } else {
+    return [day, month, year].join('-');
+  } 
 }
 
 function getStudentGender(rows, studentGender){
@@ -98,7 +102,7 @@ app.get('/students', function(req, res) {
       // Loop check on each row
       for (var i = 0; i < rows.length; i++) {
         var gender = getStudentGender(rows, rows[i].gender);
-        var dateOfBirth = formatDate(rows[i].date_of_birth);
+        var dateOfBirth = formatDate(rows[i].date_of_birth, 'normal');
 
         // Create an object to save current row's data
         var student = {
@@ -132,7 +136,9 @@ app.get('/student/:id', function(req, res){
 		if (rows.length <= 0) {
 				res.redirect('/students')
 		} else { 
-			var studentDoB = formatDateForPug(rows[0].date_of_birth);
+      var studentDoB = formatDate(rows[0].date_of_birth, 'mysql');
+      console.log(studentDoB);
+
 			// if user found
 			// render to views/index.pug template file
 			res.render('student', {
@@ -159,7 +165,7 @@ app.post('/insert_update_student', function(req, res) {
 	var studentName = req.body.name;
 	var studentAddress = req.body.address;
 	var studentGender = req.body.radio;
-	var studentDoB = formatDateForMySQL(req.body.dob);
+	var studentDoB = req.body.dob;
 	var studentOldId = req.body.oldId;
 	console.log(studentId+' '+studentName+' '+studentAddress+' '+studentGender+' '+studentDoB+' '+studentOldId);
 
