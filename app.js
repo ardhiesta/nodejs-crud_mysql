@@ -34,6 +34,18 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use('/', index);
 app.use('/users', users);
 
+function formatDateForPug(date) {
+  var d = new Date(date),
+      month = '' + (d.getMonth() + 1),
+      day = '' + d.getDate(),
+      year = d.getFullYear();
+
+  if (month.length < 2) month = '0' + month;
+  if (day.length < 2) day = '0' + day;
+
+  return [month, day, year].join('/');
+}
+
 function formatDateForMySQL(date) {
   var d = new Date(date),
       month = '' + (d.getMonth() + 1),
@@ -118,42 +130,52 @@ app.get('/student/:id', function(req, res){
 		
 		// if user not found
 		if (rows.length <= 0) {
-				req.flash('error', 'Student not found with id = ' + req.params.id)
 				res.redirect('/students')
-		}
-		else { // if user found
-				// render to views/index.pug template file
-				res.render('student', {
-						title: 'Edit Student', 
-						//data: rows[0],
-						sid: rows[0].student_id,
-						sname: rows[0].name
-				})
+		} else { 
+			var studentDoB = formatDateForPug(rows[0].date_of_birth);
+			// if user found
+			// render to views/index.pug template file
+			res.render('student', {
+				title: 'Edit Student', 
+				sid: rows[0].student_id,
+				sname: rows[0].name,
+				saddress: rows[0].address,
+				sgender: rows[0].gender,
+				sdob: studentDoB,
+				sOldId: rows[0].student_id
+			})
 		}            
 	});
 });
 
 ///
 /// HTTP Method	: POST
-/// Endpoint 	: /insert_student
+/// Endpoint 	: /insert_update_student
 /// 
-/// To insert student data in MySQL database.
+/// To insert or update student data in MySQL database.
 ///
-app.post('/insert_student', function(req, res) {
+app.post('/insert_update_student', function(req, res) {
 	var studentId = req.body.id;
 	var studentName = req.body.name;
 	var studentAddress = req.body.address;
 	var studentGender = req.body.radio;
 	var studentDoB = formatDateForMySQL(req.body.dob);
-	console.log(studentId+' '+studentName+' '+studentAddress+' '+studentGender+' '+studentDoB);
+	var studentOldId = req.body.oldId;
+	console.log(studentId+' '+studentName+' '+studentAddress+' '+studentGender+' '+studentDoB+' '+studentOldId);
 
 	var postData  = {student_id: studentId, name: studentName, address: studentAddress, gender: studentGender, date_of_birth: studentDoB};
-	con.query('INSERT INTO tbl_student SET ?', postData, function (error, results, fields) {
-		if (error) throw error;
-		console.log(results.insertId);
-		// res.send('insert ok');
-		res.redirect('/students');
-	});
+
+	if(studentOldId !== undefined && studentOldId !== '') {
+		con.query('UPDATE tbl_student SET student_id = ?, name = ?, address = ?, gender = ?, date_of_birth = ? WHERE student_id = ?', [studentId, studentName, studentAddress, studentGender, studentDoB, studentOldId], function (error, results, fields) {
+			if (error) throw error;
+			res.redirect('/students');
+		});
+	} else {
+		con.query('INSERT INTO tbl_student SET ?', postData, function (error, results, fields) {
+			if (error) throw error;
+			res.redirect('/students');
+		});
+	}
 });
 
 app.get('/fstudent', function(req, res) {
