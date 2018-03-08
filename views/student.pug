@@ -23,23 +23,23 @@ html
 							.radio
 								label
 									input(type="radio" name="radio" value="M" checked=sgender=="M")
-									i.helper
+									//- i.helper
 									| Male
 							.radio
 								label
 									input(type="radio" name="radio" value="F" checked=sgender=="F")
-									i.helper
+									//- i.helper
 									| Female
 					.row.form-group
 						label.col-2(for="Date of Birth") Date of Birth
-						input#dob.col-9.pl-0.pr-0(type="text", name="dob", value=sdob)
+						input#dob.col-9.pl-0.pr-0(type="date", name="dob", value=sdob)
 						input#oldId(type="hidden", name="oldId", value=sOldId)
 					input.btn.btn-primary(type="submit" value="Submit")
 		script(src='https://code.jquery.com/jquery-1.12.4.js')
 		script(src='https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js')
 		script(src='https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js')
-		script(src='https://code.jquery.com/ui/1.12.1/jquery-ui.js')
-		script.
-			$(function() {
-				$("#dob").datepicker({minDate: "-25Y", maxDate: "-15Y"});
-			});
+		//- script(src='https://code.jquery.com/ui/1.12.1/jquery-ui.js')
+		//- script.
+		//- 	$(function() {
+		//- 		$("#dob").datepicker({minDate: '-25Y', maxDate: '-15Y', dateFormat: 'dd-mm-yy'});
+		//- 	});
