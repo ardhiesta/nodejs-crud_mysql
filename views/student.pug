@@ -7,7 +7,7 @@ html
 		main.container.mt-5
 			h1= title
 			.card.card-body
-				form(name="student_form" action="/insert_student" method="POST")
+				form(name="student_form" action="/insert_update_student" method="POST")
 					.row.form-group
 						label.col-2(for="Student ID") Student ID
 						input#id.col-9.pl-0.pr-0(type="text", name="id", value=sid) 
@@ -16,23 +16,24 @@ html
 						input#name.col-9.pl-0.pr-0(type="text", name="name", value=sname)
 					.row.form-group
 						label.col-2(for="Address") Address
-						textarea#address.col-9.form-control.pl-2.pr-2(name="address", rows="2", value=saddress)
+						textarea#address.col-9.form-control.pl-2.pr-2(name="address", rows="2")=saddress
 					.row.form-group
 						label.col-2(for="Gender") Gender
 						.form-radio
 							.radio
 								label
-									input(type="radio" name="radio" value="M" checked)
+									input(type="radio" name="radio" value="M" checked=sgender=="M")
 									i.helper
 									| Male
 							.radio
 								label
-									input(type="radio" name="radio" value="F")
+									input(type="radio" name="radio" value="F" checked=sgender=="F")
 									i.helper
 									| Female
 					.row.form-group
 						label.col-2(for="Date of Birth") Date of Birth
 						input#dob.col-9.pl-0.pr-0(type="text", name="dob", value=sdob)
+						input#oldId(type="hidden", name="oldId", value=sOldId)
 					input.btn.btn-primary(type="submit" value="Submit")
 		script(src='https://code.jquery.com/jquery-1.12.4.js')
 		script(src='https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js')
