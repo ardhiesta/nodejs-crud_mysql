@@ -154,6 +154,13 @@ app.get('/student/:id', function(req, res){
 	});
 });
 
+app.post('/delete_student/:id', function (req, res) {
+  con.query('DELETE FROM tbl_student WHERE student_id = ?', [req.params.id], function(err, result) {
+    if(err) throw err
+    res.redirect('/students');
+  });
+});
+
 ///
 /// HTTP Method	: POST
 /// Endpoint 	: /insert_update_student
