@@ -1,14 +1,13 @@
-var express = require('express');
-var path = require('path');
-var favicon = require('serve-favicon');
-var logger = require('morgan');
-var cookieParser = require('cookie-parser');
-var bodyParser = require('body-parser');
+const express = require('express');
+const path = require('path');
+const logger = require('morgan');
+const cookieParser = require('cookie-parser');
+const bodyParser = require('body-parser');
 
-var index = require('./routes/index');
-var users = require('./routes/users');
+const index = require('./routes/index');
+const users = require('./routes/users');
 
-var app = express();
+const app = express();
 
 const mysql = require('mysql');
 const env = process.env.NODE_ENV || 'development';
@@ -24,8 +23,6 @@ const con = mysql.createConnection({
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'pug');
 
-// uncomment after placing your favicon in /public
-//app.use(favicon(path.join(__dirname, 'public', 'favicon.ico')));
 app.use(logger('dev'));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
@@ -67,31 +64,11 @@ function getStudentGender(rows, studentGender){
 /// To get collection of student saved in MySQL database.
 ///
 app.get('/students', function(req, res) {
-  var studentList = [];
-
   // Do the query to get data.
   con.query('SELECT * FROM tbl_student', function(err, rows, fields) {
     if (err) {
       res.status(500).json({"status_code": 500,"status_message": "internal server error"});
     } else {
-      console.log(rows);
-
-      // Loop check on each row
-      for (var i = 0; i < rows.length; i++) {
-        var gender = getStudentGender(rows, rows[i].gender);
-        var dateOfBirth = formatDate(rows[i].date_of_birth, 'normal');
-
-        // Create an object to save current row's data
-        var student = {
-          'student_id':rows[i].student_id,
-          'name':rows[i].name,
-          'address':rows[i].address,
-          'gender':gender,
-          'date_of_birth':dateOfBirth
-        }
-        // Add object into array
-        studentList.push(student);
-    }
 
     // Render index.pug page using array 
     res.render('index', {title: 'Student List', data: rows});
