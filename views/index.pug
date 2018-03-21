@@ -1,8 +1,7 @@
-html
-	head
-		title= 'Web Student'
-		link(href='https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css', rel='stylesheet')
-	body.container
+extends layout
+
+block content
+	.container.mt-5
 		h1= title
 		.form-group
 			a.btn.btn-primary(href="/fstudent")= 'Add Student'
@@ -26,6 +25,3 @@ html
 					td
 						form(action="/delete_student/"+student.student_id method="POST")
 							input.btn.btn-warning(type="submit" value="Delete")
-		script(src='https://code.jquery.com/jquery-3.2.1.slim.min.js')
-		script(src='https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js')
-		script(src='https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js')
