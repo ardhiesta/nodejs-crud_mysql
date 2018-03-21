@@ -3,7 +3,6 @@ const path = require('path');
 const bodyParser = require('body-parser');
 
 const index = require('./routes/index');
-const users = require('./routes/users');
 const students = require('./routes/students');
 
 const app = express();
