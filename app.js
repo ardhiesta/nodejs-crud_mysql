@@ -6,18 +6,12 @@ const bodyParser = require('body-parser');
 
 const index = require('./routes/index');
 const users = require('./routes/users');
+const students = require('./routes/students_api');
 
 const app = express();
-
-const mysql = require('mysql');
-const env = process.env.NODE_ENV || 'development';
-const config = require('./config/config')[env];
-const con = mysql.createConnection({
-  host: config.database.host,
-  user: config.database.user,
-  password: config.database.password,
-  database: config.database.db_name
-});
+const axios = require("axios");
+const connection = require('./connection');
+app.locals.moment = require('moment');
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
@@ -31,6 +25,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/', index);
 app.use('/users', users);
+app.use('/api/students', students);
 
 function formatDate(date, type) {
   var d = new Date(date),
@@ -64,15 +59,13 @@ function getStudentGender(rows, studentGender){
 /// To get collection of student saved in MySQL database.
 ///
 app.get('/students', function(req, res) {
-  // Do the query to get data.
-  con.query('SELECT * FROM tbl_student', function(err, rows, fields) {
-    if (err) {
-      res.status(500).json({"status_code": 500,"status_message": "internal server error"});
-    } else {
-
-    // Render index.pug page using array 
-    res.render('index', {title: 'Student List', data: rows});
-    }
+  axios.get('http://localhost:3000/api/students')
+  .then(function (response) {
+    console.log(response.data);
+    res.render('index', {title: 'Student List', data: response.data});
+  })
+  .catch(function (error) {
+    console.log(error);
   });
 });
 
@@ -83,7 +76,7 @@ app.get('/students', function(req, res) {
 /// Show edit form
 ///
 app.get('/student/:id', function(req, res){
-	con.query('SELECT * FROM tbl_student WHERE student_id = ?', [req.params.id], function(err, rows, fields) {
+	connection.query('SELECT * FROM tbl_student WHERE student_id = ?', [req.params.id], function(err, rows, fields) {
 		if(err) throw err
 		
 		// if user not found
@@ -109,7 +102,7 @@ app.get('/student/:id', function(req, res){
 });
 
 app.post('/delete_student/:id', function (req, res) {
-  con.query('DELETE FROM tbl_student WHERE student_id = ?', [req.params.id], function(err, result) {
+  connection.query('DELETE FROM tbl_student WHERE student_id = ?', [req.params.id], function(err, result) {
     if(err) throw err
     res.redirect('/students');
   });
@@ -133,12 +126,12 @@ app.post('/insert_update_student', function(req, res) {
 	var postData  = {student_id: studentId, name: studentName, address: studentAddress, gender: studentGender, date_of_birth: studentDoB};
 
 	if(studentOldId !== undefined && studentOldId !== '') {
-		con.query('UPDATE tbl_student SET student_id = ?, name = ?, address = ?, gender = ?, date_of_birth = ? WHERE student_id = ?', [studentId, studentName, studentAddress, studentGender, studentDoB, studentOldId], function (error, results, fields) {
+		connection.query('UPDATE tbl_student SET student_id = ?, name = ?, address = ?, gender = ?, date_of_birth = ? WHERE student_id = ?', [studentId, studentName, studentAddress, studentGender, studentDoB, studentOldId], function (error, results, fields) {
 			if (error) throw error;
 			res.redirect('/students');
 		});
 	} else {
-		con.query('INSERT INTO tbl_student SET ?', postData, function (error, results, fields) {
+		connection.query('INSERT INTO tbl_student SET ?', postData, function (error, results, fields) {
 			if (error) throw error;
 			res.redirect('/students');
 		});
