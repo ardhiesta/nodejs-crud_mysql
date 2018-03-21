@@ -34,30 +34,6 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use('/', index);
 app.use('/users', users);
 
-// function formatDateForPug(date) {
-//   var d = new Date(date),
-//       month = '' + (d.getMonth() + 1),
-//       day = '' + d.getDate(),
-//       year = d.getFullYear();
-
-//   if (month.length < 2) month = '0' + month;
-//   if (day.length < 2) day = '0' + day;
-
-//   return [month, day, year].join('/');
-// }
-
-// function formatDateForMySQL(date) {
-//   var d = new Date(date),
-//       month = '' + (d.getMonth() + 1),
-//       day = '' + d.getDate(),
-//       year = d.getFullYear();
-
-//   if (month.length < 2) month = '0' + month;
-//   if (day.length < 2) day = '0' + day;
-
-//   return [year, month, day].join('-');
-// }
-
 function formatDate(date, type) {
   var d = new Date(date),
       month = '' + (d.getMonth() + 1),
@@ -117,7 +93,7 @@ app.get('/students', function(req, res) {
     }
 
     // Render index.pug page using array 
-    res.render('index', {title: 'Student List', data: studentList});
+    res.render('index', {title: 'Student List', data: rows});
     }
   });
 });
