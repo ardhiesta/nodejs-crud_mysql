@@ -1,7 +1,7 @@
 const express = require('express');
 const path = require('path');
-const logger = require('morgan');
-const cookieParser = require('cookie-parser');
+// const logger = require('morgan');
+// const cookieParser = require('cookie-parser');
 const bodyParser = require('body-parser');
 
 const index = require('./routes/index');
@@ -13,14 +13,17 @@ const axios = require("axios");
 const connection = require('./connection');
 app.locals.moment = require('moment');
 
+const env = process.env.NODE_ENV || 'development';
+const config = require('./config/config')[env];
+
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'pug');
 
-app.use(logger('dev'));
+// app.use(logger('dev'));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
-app.use(cookieParser());
+// app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/', index);
@@ -59,7 +62,7 @@ function getStudentGender(rows, studentGender){
 /// To get collection of student saved in MySQL database.
 ///
 app.get('/students', function(req, res) {
-  axios.get('http://localhost:3000/api/students')
+  axios.get(config.server.host+'/api/students')
   .then(function (response) {
     console.log(response.data);
     res.render('index', {title: 'Student List', data: response.data});
@@ -121,9 +124,9 @@ app.post('/insert_update_student', function(req, res) {
 	var studentGender = req.body.radio;
 	var studentDoB = req.body.dob;
 	var studentOldId = req.body.oldId;
-	console.log(studentId+' '+studentName+' '+studentAddress+' '+studentGender+' '+studentDoB+' '+studentOldId);
+	// console.log(studentId+' '+studentName+' '+studentAddress+' '+studentGender+' '+studentDoB+' '+studentOldId);
 
-	var postData  = {student_id: studentId, name: studentName, address: studentAddress, gender: studentGender, date_of_birth: studentDoB};
+	// var postData  = {student_id: studentId, name: studentName, address: studentAddress, gender: studentGender, date_of_birth: studentDoB};
 
 	if(studentOldId !== undefined && studentOldId !== '') {
 		connection.query('UPDATE tbl_student SET student_id = ?, name = ?, address = ?, gender = ?, date_of_birth = ? WHERE student_id = ?', [studentId, studentName, studentAddress, studentGender, studentDoB, studentOldId], function (error, results, fields) {
@@ -131,16 +134,31 @@ app.post('/insert_update_student', function(req, res) {
 			res.redirect('/students');
 		});
 	} else {
-		connection.query('INSERT INTO tbl_student SET ?', postData, function (error, results, fields) {
-			if (error) throw error;
-			res.redirect('/students');
-		});
+    // // TODO: masalah di sini
+    // axios.post(config.server.host+'/api/students/add', {
+    //   student_id: studentId, 
+    //   name: studentName, 
+    //   address: studentAddress, 
+    //   gender: studentGender, 
+    //   date_of_birth: studentDoB
+    // })
+    // .then(function (response) {
+    //   console.log(response);
+    //   res.redirect('/students');
+    // })
+    // .catch(function (error) {
+    //   console.log(error);
+    // });
+		// connection.query('INSERT INTO tbl_student SET ?', postData, function (error, results, fields) {
+		// 	if (error) throw error;
+		// 	res.redirect('/students');
+		// });
 	}
 });
 
 app.get('/fstudent', function(req, res) {
   // Render index.pug page using array 
-  res.render('student', {title: 'Student'});
+  res.render('student1', {title: 'Student'});
 });
 
 // catch 404 and forward to error handler
