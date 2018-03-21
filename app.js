@@ -10,13 +10,14 @@ var users = require('./routes/users');
 
 var app = express();
 
-var mysql = require('mysql');
-
-var con = mysql.createConnection({
-  host: "localhost",
-  user: "linuxluv",
-  password: "linuxluv",
-  database: "db_student"
+const mysql = require('mysql');
+const env = process.env.NODE_ENV || 'development';
+const config = require('./config/config')[env];
+const con = mysql.createConnection({
+  host: config.database.host,
+  user: config.database.user,
+  password: config.database.password,
+  database: config.database.db_name
 });
 
 // view engine setup
