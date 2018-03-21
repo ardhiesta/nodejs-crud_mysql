@@ -1,7 +1,5 @@
 const express = require('express');
 const path = require('path');
-// const logger = require('morgan');
-// const cookieParser = require('cookie-parser');
 const bodyParser = require('body-parser');
 
 const index = require('./routes/index');
@@ -12,6 +10,7 @@ const app = express();
 const axios = require("axios");
 const connection = require('./connection');
 app.locals.moment = require('moment');
+const moment = require('moment');
 
 const env = process.env.NODE_ENV || 'development';
 const config = require('./config/config')[env];
@@ -20,31 +19,13 @@ const config = require('./config/config')[env];
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'pug');
 
-// app.use(logger('dev'));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
-// app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/', index);
 app.use('/users', users);
 app.use('/api/students', students);
-
-function formatDate(date, type) {
-  var d = new Date(date),
-      month = '' + (d.getMonth() + 1),
-      day = '' + d.getDate(),
-      year = d.getFullYear();
-
-  if (month.length < 2) month = '0' + month;
-  if (day.length < 2) day = '0' + day;
-
-  if (type === 'mysql') {
-    return [year, month, day].join('-');
-  } else {
-    return [day, month, year].join('-');
-  } 
-}
 
 function getStudentGender(rows, studentGender){
   if(studentGender === 'M'){
@@ -86,8 +67,8 @@ app.get('/student/:id', function(req, res){
 		if (rows.length <= 0) {
 				res.redirect('/students')
 		} else { 
-      var studentDoB = formatDate(rows[0].date_of_birth, 'mysql');
-      console.log(studentDoB);
+      var studentDoB = moment(rows[0].date_of_birth).format('YYYY-MM-DD');
+      // console.log(studentDoB);
 
 			// if user found
 			// render to views/index.pug template file
